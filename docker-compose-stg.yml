@@ -44,5 +44,5 @@ services:
       retries: 10
 
 volumes:
-  pgdata_staging:
+  pgdata_stg:
   pgdata_prod:
