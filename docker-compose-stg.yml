@@ -16,7 +16,7 @@ services:
       POSTGRES_USER: ${STG_USER}
       POSTGRES_PASSWORD: ${STG_PASS}
     ports:
-      - "127.0.0.1:5433:5432"   # host:container (5433 avoids clashing with local Postgres)
+      - "127.0.0.1:5433:5432"
     volumes:
       - pgdata_stg:/var/lib/postgresql/data/pgdata   # persistent data volume
     healthcheck:
@@ -25,7 +25,7 @@ services:
       timeout: 3s
       retries: 10
 
-postgres-prod:
+  postgres-prod:
     image: postgres:16
     container_name: pg-prod
     profiles: ["prod"]
