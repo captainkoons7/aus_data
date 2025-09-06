@@ -18,7 +18,8 @@ services:
     ports:
       - "127.0.0.1:5433:5432"
     volumes:
-      - pgdata_stg:/var/lib/postgresql/data/pgdata   # persistent data volume
+      - ./init-scripts:/docker-entrypoint-initdb.d  # initialization scripts
+      - pgdata_stg:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h 127.0.0.1 -p 5432"]
       interval: 5s
