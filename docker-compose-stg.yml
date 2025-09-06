@@ -4,40 +4,45 @@
 ##   docker compose -f docker-comp-stg.yml down
 ##   docker compose -f docker-comp-stg.yml logs -f postgres-stg
 
+name: pg-multi
 services:
   postgres-stg:
     image: postgres:16
-    container_name: postgres-stg
+    container_name: pg-stg
+    profiles: ["staging"]
     restart: unless-stopped
     environment:
-      POSTGRES_DB: aus_staging       # change if you prefer
-      POSTGRES_USER: aus_stg         # change if you prefer
-      POSTGRES_PASSWORD: change_me   # change in real usage
-      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: ${STG_DB}
+      POSTGRES_USER: ${STG_USER}
+      POSTGRES_PASSWORD: ${STG_PASS}
     ports:
-      - "5433:5432"  # host:container (5433 avoids clashing with local Postgres)
+      - "127.0.0.1:5433:5432"   # host:container (5433 avoids clashing with local Postgres)
     volumes:
       - pgdata_stg:/var/lib/postgresql/data/pgdata   # persistent data volume
-      - ./db/init:/docker-entrypoint-initdb.d:ro     # optional init scripts (*.sql, *.sh)
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h 127.0.0.1 -p 5432"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+postgres-prod:
+    image: postgres:16
+    container_name: pg-prod
+    profiles: ["prod"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PROD_DB}
+      POSTGRES_USER: ${PROD_USER}
+      POSTGRES_PASSWORD: ${PROD_PASS}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h 127.0.0.1 -p 5432"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
 volumes:
-  pgdata_stg:
-
-## Optional: pgAdmin for convenient UI access
-## Uncomment to enable, then visit http://localhost:5050
-##  pgadmin:
-##    image: dpage/pgadmin4:8
-##    container_name: pgadmin-stg
-##    restart: unless-stopped
-##    environment:
-##      PGADMIN_DEFAULT_EMAIL: admin@example.com
-##      PGADMIN_DEFAULT_PASSWORD: change_me
-##    ports:
-##      - "5050:80"
-##    depends_on:
-##      - postgres-stg
+  pgdata_staging:
+  pgdata_prod:
