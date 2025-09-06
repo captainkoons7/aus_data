@@ -1,8 +1,8 @@
 ## Docker Compose for a staging Postgres database
 ## Usage:
-##   docker compose -f docker-comp-stg.yml up -d
-##   docker compose -f docker-comp-stg.yml down
-##   docker compose -f docker-comp-stg.yml logs -f postgres-stg
+##   docker compose -f docker-compose.yml up -d
+##   docker compose -f docker-compose.yml down
+##   docker compose -f docker-compose.yml logs -f postgres-stg
 
 name: pg-multi
 services:
